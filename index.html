@@ -414,6 +414,10 @@
       font-family: var(--mono);
       font-size: 11px;
       color: var(--dim);
+      text-decoration: none;
+    }
+    .project-stars:hover {
+      color: var(--white);
     }
     .project-arrow {
       font-size: 18px;
@@ -423,6 +427,22 @@
     .project-card:hover .project-arrow {
       transform: translateX(4px);
       color: var(--accent);
+    }
+
+    .project-live {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 6px 14px;
+      border: 1px solid var(--accent);
+      transition: background 0.2s, color 0.2s;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .project-live:hover {
+      background: var(--accent);
+      color: var(--black);
     }
 
     /* Add project button */
@@ -904,7 +924,7 @@
 
   <div class="projects-grid">
     <!-- ✏️ Replace href, name, desc, lang with your real repos -->
-    <a href= "https://github.com/KevinnGit/CyberBullying_Detection_RoBERTa" target="_blank" class="project-card reveal">
+    <div class="project-card reveal">
       <div class="project-lang">Python · Streamlit · NLP</div>
       <div class="project-name">CyberGuard</div>
       <p class="project-desc">
@@ -912,10 +932,10 @@
         OCR, and multi-signal classification in a clean single-panel UI.
       </p>
       <div class="project-footer">
-        <span class="project-stars">★ Github</span>
-        <span class="project-arrow">→</span>
+        <a href="https://github.com/KevinnGit/CyberBullying_Detection_RoBERTa" target="_blank" class="project-stars">★ Github</a>
+        <a href="https://cyberbullyingdetectionroberta-btdpqrsxsedfnsfemxqzux.streamlit.app" target="_blank" class="project-live">Live Demo →</a>
       </div>
-    </a>
+    </div>
 
     <a href= "https://github.com/KevinnGit/GearBox" target="_blank" class="project-card reveal reveal-delay-1">
       <div class="project-lang">React Native · Typescript</div>
@@ -941,17 +961,17 @@
       </div>
     </a>
 
-    <a href="https://github.com/KevinnGit/DiabetesPredict" target="_blank" class="project-card reveal reveal-delay-3">
+    <div class="project-card reveal reveal-delay-3">
       <div class="project-lang">Python · ML</div>
       <div class="project-name">Diabetes Prediction</div>
       <p class="project-desc">
         An AI-powered diabetes prediction application that leverages machine learning to assess diabetes risk from patient health metrics.
       </p>
       <div class="project-footer">
-        <span class="project-stars">★ Github</span>
-        <span class="project-arrow">→</span>
+        <a href="https://github.com/KevinnGit/DiabetesPredict" target="_blank" class="project-stars">★ Github</a>
+        <a href="https://diabetespredict-pnwfaxtboqbrgzvyfrqqcr.streamlit.app" target="_blank" class="project-live">Live Demo →</a>
       </div>
-    </a>
+    </div>
 
         <a href="https://github.com/KevinnGit/Vehicle_Rental" target="_blank" class="project-card reveal reveal-delay-3">
       <div class="project-lang">React Native · Javascript · Typescript</div>
