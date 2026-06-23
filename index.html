@@ -492,6 +492,56 @@
       color: var(--accent);
     }
 
+    /* Cert image */
+    .cert-img-wrap {
+      width: 100%;
+      height: 160px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      transition: border-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel);
+    }
+    .cert-img-wrap:hover { border-color: var(--accent); }
+    .cert-img-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .cert-img-wrap:hover img { transform: scale(1.05); }
+    .cert-img-wrap .cert-placeholder {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ─── LIGHTBOX ──────────────────────────────────── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: rgba(0,0,0,0.92);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-out;
+    }
+    .lightbox.active { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border: 1px solid var(--border);
+    }
+
     /* Badges */
     .badges-row {
       display: flex; flex-wrap: wrap; gap: 12px;
@@ -908,61 +958,57 @@
 <section id="certificates">
   <div class="section-header reveal">
     <span class="section-num">03 /</span>
-    <h2 class="section-title">Credentials</h2>
+    <h2 class="section-title">Certification</h2>
     <div class="section-line"></div>
   </div>
 
   <div class="cert-grid">
     <!-- ✏️ Replace with your real certs -->
+    <!-- Place your cert images in assets/certificates/ as cert1.jpg through cert6.jpg -->
     <div class="cert-card reveal">
+      <div class="cert-img-wrap" onclick="openLightbox('assets/certificates/cert1.jpg')">
+        <img src="assets/certificates/java-1.png" alt="Java Certification" loading="lazy">
+      </div>
       <div class="cert-issuer">Java · Microsoft</div>
       <div class="cert-name">Information Technology Specialist in Java</div>
       <div class="cert-date">Issued 3/9/2024</div>
     </div>
 
     <div class="cert-card reveal reveal-delay-1">
-      <div class="cert-issuer">Sql · Microsoft </div>
+      <div class="cert-img-wrap" onclick="openLightbox('assets/certificates/cert2.jpg')">
+        <img src="assets/certificates/databases-1.png" alt="SQL Databases Certification" loading="lazy">
+      </div>
+      <div class="cert-issuer">SQL · Microsoft</div>
       <div class="cert-name">Information Technology Specialist in Databases</div>
       <div class="cert-date">Issued 5/16/2025</div>
     </div>
 
     <div class="cert-card reveal reveal-delay-2">
-      <div class="cert-issuer">Micorsoft</div>
+      <div class="cert-img-wrap" onclick="openLightbox('assets/certificates/cert3.jpg')">
+        <img src="assets/certificates/cyber-1.png" alt="Cybersecurity Certification" loading="lazy">
+      </div>
+      <div class="cert-issuer">Microsoft</div>
       <div class="cert-name">Information Technology Specialist in Cybersecurity</div>
       <div class="cert-date">Issued 5/21/2026</div>
     </div>
 
     <div class="cert-card reveal reveal-delay-3">
+      <div class="cert-img-wrap" onclick="openLightbox('assets/certificates/cert4.jpg')">
+        <img src="assets/certificates/intro-cyber.png" alt="Cisco Cybersecurity Certification" loading="lazy">
+      </div>
       <div class="cert-issuer">Cisco</div>
       <div class="cert-name">Introduction to Cybersecurity</div>
       <div class="cert-date">Issued 4/20/2026</div>
     </div>
 
     <div class="cert-card reveal reveal-delay-4">
-      <div class="cert-issuer">Google</div>
-      <div class="cert-name">Machine Learning Crash Course</div>
-      <div class="cert-date">Inprogress 2026</div>
+      <div class="cert-img-wrap" onclick="openLightbox('assets/certificates/cert5.jpg')">
+        <img src="assets/certificates/GitHub-and_Javascript.png" alt="Github and Javascript Workshop" loading="lazy">
+      </div>
+      <div class="cert-issue">UM </div>
+      <div class="cert-name">Github and Javascript Workshop</div>
+      <div class="cert-date">June 2026</div>
     </div>
-
-    <div class="cert-card reveal">
-      <div class="cert-issuer">Cisco Network Acaademy</div>
-      <div class="cert-name">Junior Cybersecurity Analyst</div>
-      <div class="cert-date">Inprogress 2026</div>
-    </div>
-  </div>
-
-  <!-- Badges -->
-  <div class="badges-row reveal">
-    <div class="badge badge-accent">Flutter Dev</div>
-    <div class="badge">Python</div>
-    <div class="badge">NLP</div>
-    <div class="badge">ML / AI</div>
-    <div class="badge">Streamlit</div>
-    <div class="badge">Git</div>
-    <div class="badge">HTML / CSS</div>
-    <div class="badge">Open Source</div>
-    <!-- Add more badges as needed -->
-  </div>
 </section>
 
 <!-- ─── CONNECT / SOCIALS ─────────────────────────────────── -->
@@ -1011,6 +1057,11 @@
     </a>
   </div>
 </section>
+
+<!-- ─── LIGHTBOX ──────────────────────────────────────────── -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="Certificate">
+</div>
 
 <!-- ─── FOOTER ────────────────────────────────────────────── -->
 <footer>
@@ -1120,6 +1171,20 @@
     }
   }, { threshold: 0.3 });
   if (aboutSection) skillObserver.observe(aboutSection);
+
+  /* ─── LIGHTBOX ───────────────────────────────────── */
+  function openLightbox(src) {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightbox-img');
+    img.src = src;
+    lb.classList.add('active');
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('active');
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeLightbox();
+  });
 </script>
 </body>
 </html>
