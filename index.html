@@ -321,6 +321,23 @@
       -webkit-mask-image: linear-gradient(to bottom, transparent, #000 32%, #000 76%, transparent);
               mask-image: linear-gradient(to bottom, transparent, #000 32%, #000 76%, transparent);
     }
+
+    /* scanning line that sweeps across hero */
+    .hero-scan {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(192,122,58,0.02) 50%, transparent 100%);
+      height: 120px;
+      animation: scanLine 8s ease-in-out infinite;
+      pointer-events: none;
+      opacity: 0;
+    }
+    @keyframes scanLine {
+      0%   { transform: translateY(-120px); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
     .hero-glow {
       position: absolute; left: 0; right: 0; bottom: 0; height: 52vh;
       background: radial-gradient(58% 88% at 50% 104%, var(--ember-glow), transparent 70%);
@@ -329,12 +346,36 @@
     }
     @keyframes breathe { from { opacity: 0.6; } to { opacity: 1; } }
 
+    /* ambient corner brackets */
+    .hero-corner {
+      position: absolute;
+      width: 60px; height: 60px;
+      pointer-events: none;
+      opacity: 0.2;
+    }
+    .hero-corner::before, .hero-corner::after {
+      content: ''; position: absolute;
+      background: var(--ember);
+    }
+    .hero-corner.tl { top: 28px; left: 28px; }
+    .hero-corner.tl::before { top: 0; left: 0; width: 28px; height: 1px; }
+    .hero-corner.tl::after  { top: 0; left: 0; width: 1px; height: 28px; }
+    .hero-corner.tr { top: 28px; right: 28px; }
+    .hero-corner.tr::before { top: 0; right: 0; width: 28px; height: 1px; }
+    .hero-corner.tr::after  { top: 0; right: 0; width: 1px; height: 28px; }
+    .hero-corner.bl { bottom: 28px; left: 28px; }
+    .hero-corner.bl::before { bottom: 0; left: 0; width: 28px; height: 1px; }
+    .hero-corner.bl::after  { bottom: 0; left: 0; width: 1px; height: 28px; }
+    .hero-corner.br { bottom: 28px; right: 28px; }
+    .hero-corner.br::before { bottom: 0; right: 0; width: 28px; height: 1px; }
+    .hero-corner.br::after  { bottom: 0; right: 0; width: 1px; height: 28px; }
+
     .hero-inner {
       display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(330px, 0.95fr);
-      gap: 56px; align-items: end;
+      grid-template-columns: minmax(0, 1.1fr) minmax(400px, 1fr);
+      gap: 48px; align-items: end;
       width: 100%;
-      padding-top: calc(var(--nav-h) + 90px);
+      padding-top: calc(var(--nav-h) + 80px);
       padding-bottom: 72px;
     }
 
@@ -355,11 +396,23 @@
       font-size: clamp(56px, 8.6vw, 126px);
       line-height: 0.93; letter-spacing: -0.01em;
       text-transform: uppercase;
+      position: relative;
     }
     .hero-name .line2 {
       color: transparent;
       -webkit-text-stroke: 1.5px rgba(236,233,226,0.75);
     }
+    /* underline accent under name */
+    .hero-name-underline {
+      display: block;
+      width: 80px; height: 3px;
+      background: var(--ember);
+      margin-top: 18px;
+      opacity: 0.8;
+      animation: underlineGrow 1.2s ease-out 0.6s both;
+    }
+    @keyframes underlineGrow { from { width: 0; } to { width: 80px; } }
+
     .hero-role {
       font-family: var(--mono); font-size: 12px;
       letter-spacing: 0.3em; text-transform: uppercase;
@@ -398,18 +451,27 @@
     .btn-race .ar { transition: transform 0.25s; }
     .btn-race:hover .ar { transform: translateX(4px); }
 
-    /* telemetry panel */
+    /* ── telemetry dashboard ── */
     .tpanel {
       border: 1px solid var(--border);
-      background: rgba(10,10,10,0.74);
-      backdrop-filter: blur(14px);
+      background: rgba(8,8,8,0.82);
+      backdrop-filter: blur(18px);
       justify-self: end;
-      width: min(460px, 100%);
+      width: min(520px, 100%);
+      position: relative;
     }
+    .tpanel::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--ember-line), transparent);
+      opacity: 0.5;
+    }
+
     .tp-head {
       display: flex; align-items: center; justify-content: space-between;
       padding: 12px 16px;
       border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(192,122,58,0.04), transparent);
     }
     .rec {
       display: flex; align-items: center; gap: 7px;
@@ -421,6 +483,8 @@
       background: var(--ember);
       animation: led-blink 1.2s ease-in-out infinite;
     }
+
+    /* primary data grid — top row */
     .tp-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 1px; background: var(--border);
@@ -435,6 +499,40 @@
     }
     .tp-val em { font-style: normal; color: var(--ember); }
     #raceClock { font-family: var(--mono); font-size: 27px; letter-spacing: 0.06em; }
+
+    /* multi-channel waveform area */
+    .tp-waves {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    .wave-cell {
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    .wave-cell canvas {
+      display: block; width: 100%; height: 56px;
+    }
+    .wave-label {
+      position: absolute; top: 4px; left: 8px;
+      font-family: var(--mono); font-size: 8px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mid);
+      pointer-events: none;
+    }
+    .wave-value {
+      position: absolute; top: 4px; right: 8px;
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.08em;
+      color: var(--ember-soft);
+      font-variant-numeric: tabular-nums;
+      pointer-events: none;
+    }
+
+    /* status rows */
     .tp-status { padding: 10px 18px 14px; }
     .ts-row {
       display: flex; align-items: center; justify-content: space-between;
@@ -446,16 +544,51 @@
     }
     .ts-row:last-child { border-bottom: none; }
     .ts-row .r { display: flex; align-items: center; gap: 9px; color: var(--white); }
-    #spark { display: block; width: 100%; height: 74px; background: var(--black); border-top: 1px solid var(--border); }
+
+    /* horizontal mini-bars */
+    .tp-bars {
+      padding: 8px 18px 12px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px;
+      border-top: 1px solid var(--border);
+    }
+    .mini-bar-item {}
+    .mini-bar-head {
+      display: flex; justify-content: space-between;
+      font-family: var(--mono); font-size: 8px;
+      letter-spacing: 0.16em; color: var(--mid);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .mini-bar-head b { color: var(--ember-soft); font-weight: normal; }
+    .mini-bar-track {
+      height: 3px;
+      background: var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .mini-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--ember-dim), var(--ember));
+      transition: width 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0;
+    }
+
+    #spark { display: block; width: 100%; height: 80px; background: var(--black); border-top: 1px solid var(--border); }
     .tp-foot {
       display: flex; justify-content: space-between; gap: 12px;
       padding: 9px 16px;
       border-top: 1px solid var(--border);
+      background: rgba(192,122,58,0.02);
     }
 
     @media (max-width: 1080px) {
       .hero-inner { grid-template-columns: 1fr; gap: 44px; padding-top: calc(var(--nav-h) + 64px); }
       .tpanel { justify-self: start; }
+    }
+    @media (max-width: 560px) {
+      .tpanel { width: 100%; }
+      .tp-waves { grid-template-columns: 1fr; }
+      .tp-bars { grid-template-columns: 1fr; }
     }
 
     /* ══════════════════════════════════════════
@@ -1013,6 +1146,9 @@
       }
       .reveal { opacity: 1; transform: none; filter: none; }
       #accPath, #lossPath { stroke-dashoffset: 0 !important; }
+      .hero-scan { display: none; }
+      .hero-name-underline { animation: none; width: 80px; }
+      .mini-bar-fill { transition: none; }
     }
 
     /* ══════════════════════════════════════════
@@ -1091,13 +1227,19 @@
   <div class="grid-wrap" aria-hidden="true">
     <div class="grid-plane" id="grid-plane"></div>
   </div>
+  <div class="hero-scan" aria-hidden="true"></div>
   <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-corner tl" aria-hidden="true"></div>
+  <div class="hero-corner tr" aria-hidden="true"></div>
+  <div class="hero-corner bl" aria-hidden="true"></div>
+  <div class="hero-corner br" aria-hidden="true"></div>
 
   <div class="wrap hero-inner">
     <div class="hero-copy">
       <div class="h-kicker reveal">Race Operations · KJA-01 · Grid Position P1</div>
       <h1 class="hero-name reveal reveal-delay-1">
         Kevin John<br><span class="line2">Anga</span>
+        <span class="hero-name-underline" aria-hidden="true"></span>
       </h1>
       <div class="hero-role reveal reveal-delay-2">SOFTWARE DEVELOPER <b>/</b> ML ENGINEER</div>
       <p class="hero-desc reveal reveal-delay-3">
@@ -1130,12 +1272,58 @@
           <div id="raceClock">24:00:00</div>
         </div>
       </div>
+
+      <!-- Multi-channel telemetry waveforms -->
+      <div class="tp-waves">
+        <div class="wave-cell">
+          <span class="wave-label">CH 01 — SIGNAL</span>
+          <span class="wave-value" id="wave-val-1">0.00</span>
+          <canvas id="wave-canvas-1" height="56" aria-hidden="true"></canvas>
+        </div>
+        <div class="wave-cell">
+          <span class="wave-label">CH 02 — NOISE</span>
+          <span class="wave-value" id="wave-val-2">0.00</span>
+          <canvas id="wave-canvas-2" height="56" aria-hidden="true"></canvas>
+        </div>
+        <div class="wave-cell">
+          <span class="wave-label">CH 03 — FREQ</span>
+          <span class="wave-value" id="wave-val-3">0 Hz</span>
+          <canvas id="wave-canvas-3" height="56" aria-hidden="true"></canvas>
+        </div>
+        <div class="wave-cell">
+          <span class="wave-label">CH 04 — LOAD</span>
+          <span class="wave-value" id="wave-val-4">0%</span>
+          <canvas id="wave-canvas-4" height="56" aria-hidden="true"></canvas>
+        </div>
+      </div>
+
       <div class="tp-status">
         <div class="ts-row"><span>SYSTEMS</span><span class="r">ONLINE <span class="led on"></span></span></div>
         <div class="ts-row"><span>PACE</span><span class="r">OPTIMAL <span class="led on"></span></span></div>
         <div class="ts-row"><span>STATUS</span><span class="r">RACING <span class="led on blink"></span></span></div>
       </div>
-      <canvas id="spark" height="74" aria-hidden="true"></canvas>
+
+      <!-- Mini performance bars -->
+      <div class="tp-bars">
+        <div class="mini-bar-item">
+          <div class="mini-bar-head"><span>CPU LOAD</span><b id="cpu-val">0%</b></div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" id="cpu-bar"></div></div>
+        </div>
+        <div class="mini-bar-item">
+          <div class="mini-bar-head"><span>MEM USAGE</span><b id="mem-val">0%</b></div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" id="mem-bar"></div></div>
+        </div>
+        <div class="mini-bar-item">
+          <div class="mini-bar-head"><span>NET I/O</span><b id="net-val">0 KB/s</b></div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" id="net-bar"></div></div>
+        </div>
+        <div class="mini-bar-item">
+          <div class="mini-bar-head"><span>THROUGHPUT</span><b id="tp-val">0 req/s</b></div>
+          <div class="mini-bar-track"><div class="mini-bar-fill" id="tp-bar"></div></div>
+        </div>
+      </div>
+
+      <canvas id="spark" height="80" aria-hidden="true"></canvas>
       <div class="tp-foot">
         <span class="tlabel">CH 01 — SCROLL VELOCITY</span>
         <span class="tlabel">MODE: ENDURANCE</span>
@@ -2225,17 +2413,36 @@
     if (!spark.clientWidth) return;
     const dpr = window.devicePixelRatio || 1;
     spark.width = spark.clientWidth * dpr;
-    spark.height = 74 * dpr;
+    spark.height = 80 * dpr;
     sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     sBuf = [];
   }
   function drawSpark() {
-    const w = spark.clientWidth, h = 74;
+    const w = spark.clientWidth, h = 80;
     sctx.clearRect(0, 0, w, h);
+    /* center reference line */
     sctx.strokeStyle = '#161616';
+    sctx.lineWidth = 1;
     sctx.beginPath(); sctx.moveTo(0, h / 2); sctx.lineTo(w, h / 2); sctx.stroke();
+    /* secondary guides */
+    sctx.strokeStyle = '#111';
+    sctx.beginPath(); sctx.moveTo(0, h * 0.25); sctx.lineTo(w, h * 0.25); sctx.stroke();
+    sctx.beginPath(); sctx.moveTo(0, h * 0.75); sctx.lineTo(w, h * 0.75); sctx.stroke();
     if (sBuf.length < 2) return;
     const step = w / (sBuf.length - 1);
+    /* filled area */
+    sctx.fillStyle = 'rgba(192,122,58,0.06)';
+    sctx.beginPath();
+    sctx.moveTo(0, h / 2);
+    for (let i = 0; i < sBuf.length; i++) {
+      const x = i * step;
+      const yv = h * 0.82 - Math.min(sBuf[i], 60) / 60 * h * 0.64;
+      sctx.lineTo(x, yv);
+    }
+    sctx.lineTo((sBuf.length - 1) * step, h / 2);
+    sctx.closePath();
+    sctx.fill();
+    /* line */
     sctx.strokeStyle = '#c07a3a';
     sctx.lineWidth = 1.5;
     sctx.shadowColor = 'rgba(192,122,58,0.55)';
@@ -2250,6 +2457,158 @@
     sctx.shadowBlur = 0;
   }
 
+  /* ── 4-channel waveforms ── */
+  const WAVE_COUNT = 4;
+  const waveBufs = [[], [], [], []];
+  const waveCanvases = [];
+  const waveCtxs = [];
+  const waveValEls = [];
+  for (let i = 0; i < WAVE_COUNT; i++) {
+    const c = document.getElementById('wave-canvas-' + (i + 1));
+    if (!c) continue;
+    waveCanvases.push(c);
+    waveCtxs.push(c.getContext('2d'));
+    waveValEls.push(document.getElementById('wave-val-' + (i + 1)));
+  }
+
+  function sizeWaves() {
+    const dpr = window.devicePixelRatio || 1;
+    waveCanvases.forEach((c, i) => {
+      if (!c.clientWidth) return;
+      c.width = c.clientWidth * dpr;
+      c.height = 56 * dpr;
+      waveCtxs[i].setTransform(dpr, 0, 0, dpr, 0, 0);
+      waveBufs[i] = [];
+    });
+  }
+
+  function drawWave(buf, ctx, canvas, color, waveType) {
+    if (!canvas.clientWidth) return;
+    const w = canvas.clientWidth, h = 56;
+    ctx.clearRect(0, 0, w, h);
+    /* center line */
+    ctx.strokeStyle = '#151515';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2); ctx.stroke();
+    if (buf.length < 2) return;
+    const step = w / (buf.length - 1);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    ctx.shadowColor = color.replace(')', ',0.4)').replace('rgb', 'rgba');
+    ctx.shadowBlur = 4;
+    ctx.beginPath();
+    for (let i = 0; i < buf.length; i++) {
+      const x = i * step;
+      let yv;
+      if (waveType === 0) {
+        /* smooth sine-like signal */
+        yv = h / 2 + buf[i] * h * 0.38;
+      } else if (waveType === 1) {
+        /* noisy / random */
+        yv = h / 2 + buf[i] * h * 0.42;
+      } else if (waveType === 2) {
+        /* square-ish digital */
+        yv = h / 2 + (buf[i] > 0 ? 1 : -1) * h * 0.32;
+      } else {
+        /* ramp / sawtooth style */
+        yv = h * 0.85 - Math.abs(buf[i]) * h * 0.7;
+      }
+      i === 0 ? ctx.moveTo(x, yv) : ctx.lineTo(x, yv);
+    }
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+  }
+
+  /* per-wave noise generators */
+  const wavePhases = [0, 0, 0, 0];
+  function updateWaves(dt) {
+    wavePhases[0] += dt * 2.2;
+    wavePhases[1] += dt * 3.7;
+    wavePhases[2] += dt * 1.5;
+    wavePhases[3] += dt * 0.8;
+
+    /* CH1: smooth sine + harmonics */
+    const v1 = Math.sin(wavePhases[0]) * 0.6 + Math.sin(wavePhases[0] * 2.3) * 0.25 + Math.sin(wavePhases[0] * 0.4) * 0.15;
+    waveBufs[0].push(v1);
+    if (waveValEls[0]) waveValEls[0].textContent = (Math.abs(v1) * 100).toFixed(1);
+
+    /* CH2: noisy random-ish */
+    const noise = (Math.random() - 0.5) * 1.6 + Math.sin(wavePhases[1]) * 0.3;
+    waveBufs[1].push(noise);
+    if (waveValEls[1]) waveValEls[1].textContent = (Math.abs(noise) * 100).toFixed(1);
+
+    /* CH3: digital square-ish */
+    const sq = Math.sin(wavePhases[2] * 1.8) > 0.1 ? 1 : -0.6;
+    waveBufs[2].push(sq);
+    if (waveValEls[2]) waveValEls[2].textContent = (Math.floor(Math.abs(Math.sin(wavePhases[2] * 0.7)) * 480) + 20) + ' Hz';
+
+    /* CH4: ramp / sawtooth */
+    const ramp = ((wavePhases[3] * 1.2) % (Math.PI * 2)) / Math.PI - 1;
+    waveBufs[3].push(ramp);
+    if (waveValEls[3]) waveValEls[3].textContent = Math.floor(Math.abs(ramp) * 100) + '%';
+
+    /* trim buffers */
+    const cap = 100;
+    for (let i = 0; i < WAVE_COUNT; i++) {
+      while (waveBufs[i].length > cap) waveBufs[i].shift();
+    }
+  }
+
+  const waveColors = ['#c07a3a', '#6f6b64', '#a9743f', '#3a3a3a'];
+
+  /* ── mini performance bars ── */
+  const miniState = {
+    cpu: { val: 0, target: 35 },
+    mem: { val: 0, target: 52 },
+    net: { val: 0, target: 64 },
+    tp:  { val: 0, target: 48 }
+  };
+  const cpuBar = document.getElementById('cpu-bar');
+  const memBar = document.getElementById('mem-bar');
+  const netBar = document.getElementById('net-bar');
+  const tpBar  = document.getElementById('tp-bar');
+  const cpuValEl = document.getElementById('cpu-val');
+  const memValEl = document.getElementById('mem-val');
+  const netValEl = document.getElementById('net-val');
+  const tpValEl  = document.getElementById('tp-val');
+
+  function updateBars(dt) {
+    /* slowly drift targets */
+    if (Math.random() < dt * 0.3) miniState.cpu.target = 20 + Math.random() * 60;
+    if (Math.random() < dt * 0.25) miniState.mem.target = 35 + Math.random() * 45;
+    if (Math.random() < dt * 0.4) miniState.net.target = Math.random() * 90;
+    if (Math.random() < dt * 0.35) miniState.tp.target = Math.random() * 85;
+
+    miniState.cpu.val += (miniState.cpu.target - miniState.cpu.val) * dt * 1.8;
+    miniState.mem.val += (miniState.mem.target - miniState.mem.val) * dt * 1.5;
+    miniState.net.val += (miniState.net.target - miniState.net.val) * dt * 2.0;
+    miniState.tp.val  += (miniState.tp.target - miniState.tp.val) * dt * 1.6;
+
+    if (cpuBar) cpuBar.style.width = miniState.cpu.val.toFixed(1) + '%';
+    if (memBar) memBar.style.width = miniState.mem.val.toFixed(1) + '%';
+    if (netBar) netBar.style.width = miniState.net.val.toFixed(1) + '%';
+    if (tpBar)  tpBar.style.width  = miniState.tp.val.toFixed(1) + '%';
+
+    if (cpuValEl) cpuValEl.textContent = Math.round(miniState.cpu.val) + '%';
+    if (memValEl) memValEl.textContent = Math.round(miniState.mem.val) + '%';
+    if (netValEl) netValEl.textContent = Math.round(miniState.net.val * 3.2) + ' KB/s';
+    if (tpValEl)  tpValEl.textContent  = Math.round(miniState.tp.val * 1.1) + ' req/s';
+  }
+
+  /* animate bars on first reveal */
+  const barsIO2 = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      miniState.cpu.val = 0; miniState.cpu.target = 42;
+      miniState.mem.val = 0; miniState.mem.target = 58;
+      miniState.net.val = 0; miniState.net.target = 71;
+      miniState.tp.val = 0;  miniState.tp.target = 55;
+      barsIO2.unobserve(e.target);
+    });
+  }, { threshold: 0.2 });
+  const tpanelEl = document.querySelector('.tpanel');
+  if (tpanelEl) barsIO2.observe(tpanelEl);
+
   function fmtRace(sec) {
     const s = Math.max(0, Math.floor(sec));
     const p = n => String(n).padStart(2, '0');
@@ -2263,6 +2622,7 @@
     });
     st.maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     sizeSpark();
+    sizeWaves();
   }
 
   function frame(ts) {
@@ -2302,6 +2662,19 @@
       while (sBuf.length > cap) sBuf.shift();
       drawSpark();
     }
+
+    /* 4-channel waveforms */
+    if (!reduceMotion) {
+      updateWaves(dt);
+      for (let i = 0; i < WAVE_COUNT; i++) {
+        if (waveCanvases[i] && waveCtxs[i]) {
+          drawWave(waveBufs[i], waveCtxs[i], waveCanvases[i], waveColors[i], i);
+        }
+      }
+    }
+
+    /* mini performance bars */
+    updateBars(dt);
 
     /* 24h timeline progress */
     const rect = tlTrack.getBoundingClientRect();
